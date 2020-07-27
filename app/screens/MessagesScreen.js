@@ -14,14 +14,14 @@ const initialMessages = [
     title: "Tom Mwakamsha Gona",
     description:
       "Here is how you can see the messages screen and im sure youre gonna love everything",
-    image: require("../assets/mosh.jpg"),
+    image: require("../assets/tom.jpg"),
   },
   {
     id: 2,
     title: "Emmanuel Amani Mwakamsha",
     description:
       "My description is about the good use of a Messages screen and see how well it can display the items",
-    image: require("../assets/mosh.jpg"),
+    image: require("../assets/tom.jpg"),
   },
 ];
 
