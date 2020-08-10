@@ -20,9 +20,10 @@ const menuItems = [
       name: "email",
       backgroundColor: colors.secondary,
     },
+    targetScreen: "Messages",
   },
 ];
-function AccountScreen() {
+function AccountScreen({ navigation }) {
   return (
     <Screen style={styles.screen}>
       <View style={styles.container}>
@@ -40,6 +41,7 @@ function AccountScreen() {
           renderItem={({ item }) => (
             <ListItem
               title={item.title}
+              onPress={() => navigation.navigate(item.targetScreen)}
               ImageComponent={
                 <Icon
                   name={item.icon.name}
