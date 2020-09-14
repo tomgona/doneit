@@ -1,92 +1,37 @@
-import React from "react";
-import { Text, Button } from "react-native";
-import { createStackNavigator } from "@react-navigation/stack";
+import React, { useState, useEffect } from "react";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import jwtDecode from "jwt-decode";
+import { AppLoading } from "expo";
 
-import Screen from "./app/components/Screen";
 import AuthNavigator from "./app/navigation/AuthNavigator";
 import navigationTheme from "./app/navigation/navigationTheme";
 import AppNavigator from "./app/navigation/AppNavigator";
+import OfflineNotice from "./app/components/OfflineNotice";
+import AuthContext from "./app/auth/context";
+import authStorage from "./app/auth/storage";
 
-const Link = () => {
-  const navigation = useNavigation();
-  return (
-    <Button title="Click" onPress={() => navigation.navigate("TweetDetails")} />
-  );
-};
-const Tweets = ({ navigation }) => (
-  <Screen>
-    <Text>Tweets</Text>
-    <Button
-      title="View Tweets"
-      onPress={() => navigation.navigate("TweetDetails", { id: 1 })}
-    />
-  </Screen>
-);
-
-const TweetDetails = ({ route }) => (
-  <Screen>
-    <Text>TweetDetails {route.params.id}</Text>
-  </Screen>
-);
-
-const AccountNavigator = () => (
-  <Screen>
-    <Text>Account</Text>
-  </Screen>
-);
-const Stack = createStackNavigator();
-const FeedNavigator = () => (
-  <Stack.Navigator
-    screenOptions={{
-      headerStyle: { backgroundColor: "dodgerblue" },
-      headerTintColor: "white",
-    }}
-  >
-    <Stack.Screen
-      name="Tweets"
-      component={Tweets}
-      options={{
-        headerStyle: { backgroundColor: "tomato" },
-        headerTintColor: "white",
-        headerShown: false,
-      }}
-    />
-    <Stack.Screen
-      name="TweetDetails"
-      component={TweetDetails}
-      options={({ route }) => ({ title: route.params.id })}
-    />
-  </Stack.Navigator>
-);
-const Tab = createBottomTabNavigator();
-const TabNavigator = () => (
-  <Tab.Navigator
-    tabBarOptions={{
-      activeBackgroundColor: "red",
-      activeTintColor: "white",
-      inactiveBackgroundColor: "#eee",
-      inactiveTintColor: "black",
-    }}
-  >
-    <Tab.Screen
-      name="Feeds"
-      component={FeedNavigator}
-      options={{
-        tabBarIcon: ({ size, color }) => (
-          <MaterialCommunityIcons name="home" size={size} color={color} />
-        ),
-      }}
-    />
-    <Tab.Screen name="Account" component={AccountNavigator} />
-  </Tab.Navigator>
-);
 export default function App() {
+  const [user, setUser] = useState();
+  const [isReady, setIsReady] = useState(false);
+
+  const restoreToken = async () => {
+    const token = await authStorage.getToken();
+    if (!token) return;
+    setUser(jwtDecode(token));
+  };
+
+  if (!isReady)
+    return (
+      <AppLoading startAsync={restoreToken} onFinish={() => setIsReady(true)} />
+    );
+
   return (
-    <NavigationContainer theme={navigationTheme}>
-      <AppNavigator />
-    </NavigationContainer>
+    <AuthContext.Provider value={{ user, setUser }}>
+      <OfflineNotice />
+      <NavigationContainer theme={navigationTheme}>
+        {user ? <AppNavigator /> : <AuthNavigator />}
+        <AppNavigator />
+      </NavigationContainer>
+    </AuthContext.Provider>
   );
 }
