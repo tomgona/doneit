@@ -6,8 +6,6 @@ import { ListItem, ListItemSeparator } from "../components/lists";
 import Icon from "../components/Icon";
 import colors from "../config/colors";
 import routes from "../navigation/routes";
-import { useFormikContext } from "formik";
-import AuthContext from "../auth/context";
 
 const menuItems = [
   {
@@ -27,12 +25,7 @@ const menuItems = [
   },
 ];
 function AccountScreen({ navigation }) {
-  const { user, setUser } = useContext(AuthContext);
-
-  const handleLogOut = () => {
-    setUser(null);
-    authStorage.removeToken();
-  };
+  const { user, setUser } = useAuth();
 
   return (
     <Screen style={styles.screen}>
@@ -65,7 +58,7 @@ function AccountScreen({ navigation }) {
       <ListItem
         title="logout"
         ImageComponent={<Icon name="logout" backgroundColor="#ffe66d" />}
-        onPress={handleLogOut}
+        onPress={() => logout()}
       />
     </Screen>
   );
